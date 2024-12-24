@@ -29,14 +29,15 @@ app = Dash(__name__, server=server, suppress_callback_exceptions=True)
 app.title = "Dash with Auth0"
 
 # Layout
-app.layout = html.Div([
-    dcc.Location(id='url', refresh=False),
-    html.Div(id='page-content'),
-])
+# app.layout = html.Div([
+#     dcc.Location(id='url', refresh=False),
+#     html.Div(id='page-content'),
+# ])
 
 # Home Page Layout
-home_layout = html.Div([
-    html.H1("Welcome to the Dash App"),
+app.layout = html.Div([
+    dcc.Location(id='url', refresh=False),
+    html.H1(id="welcome-message"),
     html.A("Log Out", href="/logout"),
 ])
 
@@ -47,14 +48,15 @@ login_layout = html.Div([
 ])
 
 # Callbacks
-@app.callback(Output('page-content', 'children'), [Input('url', 'pathname')])
+@app.callback(Output('welcome-message', 'children'), [Input('url', 'pathname')])
 def display_page(pathname):
     if pathname == '/callback':
         return handle_callback()
     elif pathname == '/logout':
         return logout()
     elif 'profile' in session:
-        return home_layout
+        return f"Welcome {session.get('profile').get('userinfo').get('name')}"
+        
     else:
         return login_layout
 
